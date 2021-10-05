@@ -1,0 +1,129 @@
+.app-container {
+  display: flex;
+  flex-direction: column;
+  max-height: 50px;
+  padding: 20px;
+
+  .app-title {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+
+    .img-title-container {
+      margin-left: 10px;
+
+      .pick-img {
+        width: 100px;
+        height: 50px;
+      }
+    }
+  }
+
+  .app-filters {
+    display: flex;
+    margin-bottom: 10px;
+    width: 100%;
+
+    .filter-group {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+
+      @media screen and (max-width: 1000px) {
+        flex-flow: wrap column;
+      }
+
+      .filter-container {
+        display: flex;
+        flex-direction: column;
+        width: 30%;
+
+        @media screen and (max-width: 1000px) {
+          width: 100%;
+        }
+
+        .filters {
+          display: flex;
+          flex-direction: column;
+
+          label {
+            margin-bottom: 5px;
+          }
+          select {
+            margin-bottom: 10px;
+          }
+        }
+      }
+    }
+
+    .img-filters-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 10px;
+
+      .img-filters {
+        width: 75px;
+        height: 75px;
+      }
+    }
+
+    .search-button-container {
+      display: flex;
+      align-self: flex-end;
+      margin: 0px 0px 10px 10px;
+      height: 40px;
+    }
+  }
+
+  .result-container {
+    display: flex;
+    justify-content: center;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+
+    .plant-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 15px;
+
+      img {
+        border: 2px solid #dee2e6;
+        border-radius: 50%;
+        width: 300px;
+        height: 300px;
+      }
+
+      .plants-info-container {
+        h3 {
+          font-style: italic;
+          text-align: center;
+          margin-top: 15px;
+          margin-bottom: 15px;
+        }
+
+        .plants-info {
+          label {
+            margin-right: 5px;
+          }
+
+          .bold-text {
+            font-weight: 700;
+          }
+        }
+      }
+    }
+
+    .result-placeholder {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 15px;
+
+      h3 {
+        margin-top: 10px;
+      }
+    }
+  }
+}

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Front End Test (Red Ventures)</title>
+    <link rel="stylesheet" href="../styles/main.scss" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+
+  <body>
+    <div class="app-container">
+      <div class="app-title">
+        <h1 id="title">Plant Picker!</h1>
+        <div class="img-title-container">
+          <img
+            id="pick-img"
+            class="pick-img"
+            src="../images/illustrations/pick.png"
+          />
+        </div>
+      </div>
+
+      <div class="app-filters">
+        <div class="filter-group">
+          <div class="filter-container">
+            <div class="img-filters-container">
+              <img
+                id="sunglight-img"
+                class="img-filters"
+                src="../images/illustrations/sun.png"
+              />
+            </div>
+            <div class="filters">
+              <label id="sunlight-select-label">
+                Defina a quantidade de luz solar que a sua planta terá
+              </label>
+
+              <select
+                id="sunlight-select"
+                class="form-select form-select-m"
+                isRequired
+              >
+                <option value="null" selected>Selecione...</option>
+                <option value="no">Não receberá luz solar</option>
+                <option value="low">Pouca luz solar</option>
+                <option value="high">Bastante luz solar</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="filter-container">
+            <div class="img-filters-container">
+              <img
+                id="water-img"
+                class="img-filters"
+                src="../images/illustrations/wateringcan.png"
+              />
+            </div>
+            <div class="filters">
+              <label id="water-select-label">
+                Defina a frequência em que a sua planta receberá água
+              </label>
+
+              <select
+                id="water-select"
+                class="form-select form-select-m"
+                isRequired
+              >
+                <option value="null" selected>Selecione...</option>
+                <option value="rarely">Raramente</option>
+                <option value="regularly">Regularmente</option>
+                <option value="daily">Diáriamente</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="filter-container">
+            <div class="img-filters-container">
+              <img
+                id="pets-img"
+                class="img-filters"
+                src="../images/illustrations/dog.png"
+              />
+            </div>
+            <div class="filters">
+              <label id="pets-select-label">
+                Você tem pets que possam comer/mastigar a sua planta?
+              </label>
+
+              <select
+                id="pets-select"
+                class="form-select form-select-m"
+                isRequired
+              >
+                <option value="null" selected>Selecione...</option>
+                <option value="false">Não</option>
+                <option value="true">Sim</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="search-button-container">
+          <button
+            id="search-button"
+            class="btn btn-primary"
+            onclick="makeRequest();"
+          >
+            Pesquisar
+          </button>
+        </div>
+      </div>
+
+      <div class="result-container">
+        <div id="plantList">
+          <div class="result-placeholder">
+            <img src="../images/illustrations/no-results.png" />
+
+            <h3>Utilize os filtros acima para começar uma busca :)</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.js"></script>
+    <script>
+      {
+        // Start Request area
+        const _getSelectValue = id => {
+          const elementValue = document.getElementById(id).value;
+
+          return elementValue != 'null'
+            ? elementValue
+            : alert('As opções devem conter valores válidos!');
+        };
+
+        const handle404 = statusCode => {
+          if (statusCode != 404) return;
+
+          alert('Não foi encontrado resultados!');
+        };
+
+        const _handleError = ({ status }) => {
+          const ERRORS = {
+            404: handle404(status),
+            default: () => {}
+          };
+
+          return ERRORS[status] ? ERRORS[status] : ERRORS['default'];
+        };
+
+        const makeRequest = () => {
+          const payload = {
+            sun: _getSelectValue('sunlight-select'),
+            water: _getSelectValue('water-select'),
+            pets: _getSelectValue('pets-select')
+          };
+
+          axios
+            .get('https://front-br-challenges.web.app/api/v2/green-thumb/', {
+              params: payload
+            })
+            .then(response => {
+              response && createListWithInnerHTML(response);
+            })
+            .catch(error => _handleError(error.response));
+        };
+        // End Request area
+
+        // Start Result area
+        const _translateSunKeys = key => {
+          // Valores aceitavéis: no | low | high
+          const SUN_KEYS = {
+            no: 'Não é necessário.',
+            low: 'Pouca luz solar necessária.',
+            high: 'Bastante luz solar necessária.'
+          };
+
+          return SUN_KEYS[key];
+        };
+
+        const _translateWaterKeys = key => {
+          // Valores aceitavéis: regularly | daily | rarely
+          const WATER_KEYS = {
+            regularly: 'Regularmente deve receber água.',
+            daily: 'Diáriamente deve receber água.',
+            rarely: 'Raramente deve receber água.'
+          };
+
+          return WATER_KEYS[key];
+        };
+
+        const _translateToxicityKeys = key => {
+          // Valores aceitavéis: true | false
+          const TOXICITY_KEYS = {
+            true: 'Apresenta toxicidade.',
+            false: 'Não apresenta toxicidade.'
+          };
+
+          return TOXICITY_KEYS[key];
+        };
+
+        const _translateStaffFavoriteKeys = key => {
+          const STAFF_FAVORITE_KEYS = {
+            true: 'Sim.',
+            false: 'Não.'
+          };
+
+          return STAFF_FAVORITE_KEYS[key];
+        };
+
+        const createListWithInnerHTML = ({ data }) => {
+          const rows = data.map(item => {
+            return `<div class="plant-card">
+                      <img id="${item.name
+                        .toLowerCase()
+                        .replaceAll(' ', '-')}-img" src="${item.url}" />
+
+                      <div class="plants-info-container">
+                        <h3 id="plant-name">${item.name}</h3>
+                        <div class="plants-info">
+
+                          <div>
+                            <label id="sunlight-label">Quantidade de luz solar:</label>
+                            <span id="sunlight-value">${_translateSunKeys(
+                              item.sun
+                            )}</span>
+                          </div>
+
+                          <div>
+                            <label id="water-label">Quantidade de água:</label>
+                            <span id="water-value">${_translateWaterKeys(
+                              item.water
+                            )}</span>
+                          </div>
+
+                          <div>
+                            <label id="toxicity-label">Toxicidade:</label>
+                            <span id="toxicity-value">${_translateToxicityKeys(
+                              item.toxicity
+                            )}</span>
+                          </div>
+
+                          <div>
+                            <label id="staff-favorite-label">Favorita entre o pessoal:</label>
+                            <span id="staff-favorite-value">${_translateStaffFavoriteKeys(
+                              item.staff_favorite
+                            )}</span>
+                          </div>
+
+                          <div>
+                            <label id="price-label" class="bold-text">Preço:</label>
+                            <span id="price-value" class="bold-text">R$ ${
+                              item.price
+                            },00</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>`;
+          });
+
+          const html = `${rows.join('')}`;
+          document.getElementById('plantList').innerHTML = html;
+        };
+        // End Result area
+      }
+    </script>
+  </body>
+</html>
